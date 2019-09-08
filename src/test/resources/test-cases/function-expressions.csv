@@ -1,0 +1,2 @@
+LINEAR,y(n)=a0+a1*n
+POLYNOME,y(n)=a0*n^a1
