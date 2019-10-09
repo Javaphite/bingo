@@ -1,5 +1,6 @@
 package com.javaphite.bingo.regression;
 
+import com.javaphite.bingo.regression.functions.RegressionTemplate;
 import org.openjdk.jmh.results.RunResult;
 
 import java.util.ArrayList;
@@ -11,16 +12,16 @@ import static java.lang.StrictMath.pow;
 public class Regression {
 
     public Collection<Expression> evaluateAll(Collection<RunResult> statistics) {
-        List<Expression> regressions = new ArrayList<>(FunctionTemplate.values().length);
+        List<Expression> regressions = new ArrayList<>(RegressionTemplate.values().length);
 
-        for (FunctionTemplate template : FunctionTemplate.values()) {
+        for (RegressionTemplate template : RegressionTemplate.values()) {
             regressions.add(evaluate(template, statistics));
         }
 
         return regressions;
     }
 
-    private Expression evaluate(FunctionTemplate template, Collection<RunResult> statistics) {
+    private Expression evaluate(RegressionTemplate template, Collection<RunResult> statistics) {
         double sumX = 0;
         double sumY = 0;
         double sumXY = 0;
@@ -29,8 +30,8 @@ public class Regression {
         int k = statistics.size();
 
         for (RunResult result : statistics) {
-            Double x = template.getVariable().apply(Integer.parseInt(result.getParams().getParam("n")));
-            Double y = template.getFunction().apply(result.getPrimaryResult().getScore());
+            Double x = template.getVariableTransformer().apply(Integer.parseInt(result.getParams().getParam("n")));
+            Double y = template.getFunctionTransformer().apply(result.getPrimaryResult().getScore());
 
             sumX += x;
             sumY += y;

@@ -27,11 +27,11 @@ import static java.lang.StrictMath.pow;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 @Warmup(iterations = 1)
-@Measurement(iterations = 3)
+@Measurement(iterations = 20)
 @Fork(value = 1, warmups = 0)
 public class RegressionTest {
 
-    @Param({"10", "30", "50", "80", "100", "200", "300", "400", "500", "1000", "10000"})
+    @Param({"10", "30", "50", "80", "100", "200", "300", "400", "500", "1000", "2000"})
     public int n;
 
     List<Long> list;
@@ -64,7 +64,12 @@ public class RegressionTest {
 
     @Benchmark
     public void benchmark() {
-        list.sort(Long::compareTo);
+        int k=1;
+        for (int i=0; i<n; i++) {
+            for (int j=0; j<n; j++) {
+                k*=i+j;
+            }
+        }
     }
 
     private static double criteria(Expression regression, Collection<RunResult> statistics) {

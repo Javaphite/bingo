@@ -1,5 +1,7 @@
 package com.javaphite.bingo.regression;
 
+import com.javaphite.bingo.regression.functions.RegressionTemplate;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
@@ -7,24 +9,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FunctionTemplateTest {
 
-    @ParameterizedTest
-    @CsvFileSource(resources = "/test-cases/function-expressions.csv")
-    void toStringShouldReturnGeneralFunctionExpression(String function, String expression) {
-        FunctionTemplate template = FunctionTemplate.valueOf(function);
+    private static final String TEST_CASES_DIR = "/test-cases/";
 
-        String actualResult = template.toString();
-
-        assertEquals(expression, actualResult);
-    }
+    private static final String GENERAL_EXPRESSIONS_CASES = "function-expressions.csv";
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/test-cases/bigo-notation-categories.csv")
-    void getBigONotationExpressionShouldReturnRelevantValue(String function, String bigOCategory) {
-        FunctionTemplate template = FunctionTemplate.valueOf(function);
+    @CsvFileSource(resources = TEST_CASES_DIR + GENERAL_EXPRESSIONS_CASES,
+            numLinesToSkip = 1)
+    void toStringShouldReturnGeneralFunctionExpression(String functionType, String expectedExpression) {
+        RegressionTemplate template = RegressionTemplate.valueOf(functionType);
 
-        String actualResult = template.getBigONotationExpression();
+        String actualExpression = template.toString();
 
-        assertEquals(bigOCategory, actualResult);
+        assertEquals(expectedExpression, actualExpression, "Invalid regression expression!");
     }
-
 }

@@ -1,2 +1,3 @@
-LINEAR,y(n)=a0+a1*n
-POLYNOME,y(n)=a0*n^a1
+Template,Expected expression
+LINEAR,O(n): f(n) = a₀ + a₁∙n
+POLYNOMIAL,O(nᵃ): f(n) = a₀∙nᵃ¹
