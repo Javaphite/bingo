@@ -30,7 +30,7 @@ public class Regression {
         int k = statistics.size();
 
         for (RunResult result : statistics) {
-            Double x = template.getVariableTransformer().apply(Integer.parseInt(result.getParams().getParam("n")));
+            Double x = template.getArgumentTransformer().apply(Integer.parseInt(result.getParams().getParam("n")));
             Double y = template.getFunctionTransformer().apply(result.getPrimaryResult().getScore());
 
             sumX += x;
@@ -46,7 +46,4 @@ public class Regression {
 
         return new Expression(template, a0, a1);
     }
-
-
-
 }

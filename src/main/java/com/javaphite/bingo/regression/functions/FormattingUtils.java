@@ -20,7 +20,7 @@ public final class FormattingUtils {
     }
 
     static String formatAsGeneralFunction(RegressionTemplate template) {
-        return String.format(template.getFunctionStringRepresentation(),
+        return String.format(template.getGeneralFunction(),
                 FIRST_PARAMETER_PLACEHOLDER,
                 SECOND_PARAMETER_PLACEHOLDER,
                 toSuperscript(SECOND_PARAMETER_PLACEHOLDER));

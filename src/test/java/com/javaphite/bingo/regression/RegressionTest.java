@@ -27,7 +27,7 @@ import static java.lang.StrictMath.pow;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 @Warmup(iterations = 1)
-@Measurement(iterations = 20)
+@Measurement(iterations = 2)
 @Fork(value = 1, warmups = 0)
 public class RegressionTest {
 
@@ -64,12 +64,10 @@ public class RegressionTest {
 
     @Benchmark
     public void benchmark() {
-        int k=1;
-        for (int i=0; i<n; i++) {
-            for (int j=0; j<n; j++) {
-                k*=i+j;
-            }
-        }
+        String result = new StringBuilder("string")
+                .append(" formatting ")
+                .append("strings")
+                .toString();
     }
 
     private static double criteria(Expression regression, Collection<RunResult> statistics) {

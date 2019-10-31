@@ -1,5 +1,6 @@
 package com.javaphite.bingo.regression.functions;
 
+import java.util.function.Consumer;
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
 
@@ -8,64 +9,44 @@ import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.pow;
 
 public enum RegressionTemplate {
-    LINEAR("O(n)",
-            "f(n) = %1$s + %2$s∙n",
-            (a0, a1, n) -> a0 + a1 * n,
-            TransformationUtils::toSelf,
-            TransformationUtils::toSelf,
-            TransformationUtils::toSelf,
-            TransformationUtils::toDoubleValue),
-    BINARY_LOGARITHM("O(log₂n)",
-            "f(n) = %1$s + %2$s∙log₂n",
-            (a0, a1, n) -> a0 + a1 * toBinaryLogarithm(n),
-            TransformationUtils::toSelf,
-            TransformationUtils::toSelf,
-            TransformationUtils::toSelf,
-            TransformationUtils::toBinaryLogarithm),
-    NBINARY_LOGARITHM("O(n∙log₂n)",
-            "f(n) = %1$s + %2$s∙n∙log₂n",
-            (a0, a1, n) -> a0 + a1 * n * toBinaryLogarithm(n),
-            TransformationUtils::toSelf,
-            TransformationUtils::toSelf,
-            TransformationUtils::toSelf,
-            n -> n * toBinaryLogarithm(n)),
-    POLYNOMIAL("O(nᵃ)",
-            "f(n) = %1$s∙n%3$s",
-            (a0, a1, n) -> a0 * pow(n, a1),
-            a0 -> StrictMath.exp(log(a0)),
-            TransformationUtils::toSelf,
-            TransformationUtils::toNaturalLogarithm,
-            TransformationUtils::toNaturalLogarithm);
+    LINEAR(template -> template
+            .setBigOCategory("O(n)")
+            .setGeneralFunction("f(n) = %1$s + %2$s∙n")
+            .setExpressionTemplate((a0, a1, n) -> a0 + a1 * n)),
+    BINARY_LOGARITHM(template -> template
+            .setBigOCategory("O(log₂n)")
+            .setGeneralFunction("f(n) = %1$s + %2$s∙log₂n")
+            .setExpressionTemplate((a0, a1, n) -> a0 + a1 * toBinaryLogarithm(n))
+            .setArgumentTransformer(TransformationUtils::toBinaryLogarithm)),
+    NBINARY_LOGARITHM(template -> template
+            .setBigOCategory("O(n∙log₂n)")
+            .setGeneralFunction("f(n) = %1$s + %2$s∙n∙log₂n")
+            .setExpressionTemplate((a0, a1, n) -> a0 + a1 * n * toBinaryLogarithm(n))
+            .setArgumentTransformer(n -> n * toBinaryLogarithm(n))),
+    POLYNOMIAL(template -> template
+            .setBigOCategory("O(nᵃ)")
+            .setGeneralFunction("f(n) = %1$s∙n%3$s")
+            .setExpressionTemplate((a0, a1, n) -> a0 * pow(n, a1))
+            .setFirstParameterTransformer(a0 -> StrictMath.exp(log(a0)))
+            .setFunctionTransformer(TransformationUtils::toNaturalLogarithm)
+            .setArgumentTransformer(TransformationUtils::toNaturalLogarithm));
 
+    private String bigOCategory;
 
-    private final DoubleFunction<Double> firstParameterTransformer;
+    private String generalFunction;
 
-    private final DoubleFunction<Double> secondParameterTransformer;
+    private PairRegressionFunction expressionTemplate;
 
-    private final DoubleFunction<Double> functionTransformer;
+    private DoubleFunction<Double> firstParameterTransformer = TransformationUtils::toSelf;
 
-    private final IntFunction<Double> variableTransformer;
+    private DoubleFunction<Double> secondParameterTransformer = TransformationUtils::toSelf;
 
-    private final PairRegressionFunction expressionTemplate;
+    private DoubleFunction<Double> functionTransformer = TransformationUtils::toSelf;
 
-    private final String bigOCategory;
+    private IntFunction<Double> argumentTransformer = TransformationUtils::toDoubleValue;
 
-    private final String functionStringRepresentation;
-
-    RegressionTemplate(String bigOCategory,
-                       String functionStringRepresentation,
-                       PairRegressionFunction expressionTemplate,
-                       DoubleFunction<Double> firstParameterTransformer,
-                       DoubleFunction<Double> secondParameterTransformer,
-                       DoubleFunction<Double> functionTransformer,
-                       IntFunction<Double> variableTransformer) {
-        this.bigOCategory = bigOCategory;
-        this.functionStringRepresentation = functionStringRepresentation;
-        this.expressionTemplate = expressionTemplate;
-        this.firstParameterTransformer = firstParameterTransformer;
-        this.secondParameterTransformer = secondParameterTransformer;
-        this.functionTransformer = functionTransformer;
-        this.variableTransformer = variableTransformer;
+    RegressionTemplate(Consumer<RegressionTemplate> configurator) {
+        configurator.accept(this);
     }
 
     @Override
@@ -74,31 +55,66 @@ public enum RegressionTemplate {
                 FormattingUtils.formatAsGeneralFunction(this);
     }
 
+    public String getBigOCategory() {
+        return bigOCategory;
+    }
+
+    private RegressionTemplate setBigOCategory(String category) {
+        bigOCategory = category;
+        return this;
+    }
+
+    public String getGeneralFunction() {
+        return generalFunction;
+    }
+
+    private RegressionTemplate setGeneralFunction(String generalFunction) {
+        this.generalFunction = generalFunction;
+        return this;
+    }
+
     public PairRegressionFunction getExpressionTemplate() {
         return expressionTemplate;
     }
 
-    public String getBigOCategory() {
-        return bigOCategory;
+    private RegressionTemplate setExpressionTemplate(PairRegressionFunction expressionTemplate) {
+        this.expressionTemplate = expressionTemplate;
+        return this;
     }
 
     public DoubleFunction<Double> getFirstParameterTransformer() {
         return firstParameterTransformer;
     }
 
+    private RegressionTemplate setFirstParameterTransformer(DoubleFunction<Double> firstParameterTransformer) {
+        this.firstParameterTransformer = firstParameterTransformer;
+        return this;
+    }
+
     public DoubleFunction<Double> getSecondParameterTransformer() {
         return secondParameterTransformer;
+    }
+
+    private RegressionTemplate setSecondParameterTransformer(DoubleFunction<Double> secondParameterTransformer) {
+        this.secondParameterTransformer = secondParameterTransformer;
+        return this;
     }
 
     public DoubleFunction<Double> getFunctionTransformer() {
         return functionTransformer;
     }
 
-    public IntFunction<Double> getVariableTransformer() {
-        return variableTransformer;
+    private RegressionTemplate setFunctionTransformer(DoubleFunction<Double> functionTransformer) {
+        this.functionTransformer = functionTransformer;
+        return this;
     }
 
-    public String getFunctionStringRepresentation() {
-        return functionStringRepresentation;
+    public IntFunction<Double> getArgumentTransformer() {
+        return argumentTransformer;
+    }
+
+    private RegressionTemplate setArgumentTransformer(IntFunction<Double> argumentTransformer) {
+        this.argumentTransformer = argumentTransformer;
+        return this;
     }
 }

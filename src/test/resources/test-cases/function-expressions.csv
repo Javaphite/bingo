@@ -1,3 +1,5 @@
 Template,Expected expression
 LINEAR,O(n): f(n) = a₀ + a₁∙n
+BINARY_LOGARITHM,O(log₂n): f(n) = a₀ + a₁∙log₂n
+NBINARY_LOGARITHM,O(n∙log₂n): f(n) = a₀ + a₁∙n∙log₂n
 POLYNOMIAL,O(nᵃ): f(n) = a₀∙nᵃ¹
